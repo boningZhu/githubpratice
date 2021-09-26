@@ -70,7 +70,7 @@ def get_book_by_id(id):
         founded_book = {
             "id": result[0],
             "bookName": result[1],
-            "Number": result[2],
+            "priceNumber": result[2],
             "ISBN": result[3],
             "type": result[4]
         }
@@ -82,13 +82,13 @@ def get_book_by_id(id):
 @app.route('/api/v1/books', methods=['POST'])
 def create_book():
     try:
-        query = "insert into books ('bookName', 'priceNumber','ISBN','type') values (:bookName, :priceNumber, :ISBN, :typevalue)"
+        query = "insert into books ('bookName', 'priceNumber','ISBN','type') values (:bookName, :priceNumber, :ISBN, :type)"
         c1 = conn.cursor()
         c1.execute(query, {
             "bookName": request.json["bookName"],
             "priceNumber": request.json["priceNumber"],
             "ISBN": request.json["ISBN"],
-            "typevalue": request.json["typevalue"]}
+            "type": request.json["type"]}
                    )
         conn.commit()
 
@@ -102,14 +102,14 @@ def update_book_by_id(id):
     query = "update books set 'bookName' = :bookName, " \
             "'priceNumber' = :priceNumber, " \
             "'ISBN' = :ISBN, " \
-            "'type' = :typevalue where id= :id"
+            "'type' = :type where id= :id"
 
     c1 = conn.cursor()
     c1.execute(query, {
         "bookName": request.json["bookName"],
         "priceNumber": request.json["priceNumber"],
         "ISBN": request.json["ISBN"],
-        "typevalue": request.json["Type"],
+        "type": request.json["type"],
         "id": id
     })
     conn.commit()
