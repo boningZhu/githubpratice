@@ -1,116 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Book list</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <title>Book list</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 </head>
 <body>
 <div class="container mt-5">
-    <h1>Update Book</h1>
-    <form onsubmit="handleFormSubmit(event)">
-        <h1>Book form</h1>
-        <div class="mb-3">
-            <label for="bookName"  class="form-label">Bookname</label>
-            <input
-                    type="text"
-                    class="form-control"
-                    name="Book name"
-                    id="bookName"
-            >
-        </div>
-        <div class="mb-3">
-            <label for="priceNumber"  class="form-label">Price number</label>
-            <input
-                    type="text"
-                    class="from-control"
-                    name="Book name"
-                    id="priceNumber"
-            >
-        </div>
-        <div class="mb-3">
-            <label for="ISBN" class="from-label">ISBN</label>
-            <input
-                    type="text"
-                    class="from-control"
-                    name="Book name"
-                    id="ISBN"
-            >
-        </div>
-        <div class="mb-3">
-            <label for="type" class="from-label">Type</label>
-            <input
-                    type="text"
-                    class="from-control"
-                    name="Book name"
-                    id="type"
-            >
-        </div>
-        <button type="submit" class="btn btn-primary bookName">Submit</button>
-    </form>
+  <h1>Update Book</h1>
+  <form onsubmit="handleFormSubmit(event)">
+    <h1>Book form</h1>
+    <div class="mb-3">
+      <label for="bookName"  class="form-label">Bookname</label>
+      <input
+              type="text"
+              class="form-control"
+              name="Book name"
+              id="bookName"
+      >
+    </div>
+    <div class="mb-3">
+      <label for="priceNumber"  class="form-label">Price number</label>
+      <input
+              type="text"
+              class="from-control"
+              name="Book name"
+              id="priceNumber"
+      >
+    </div>
+    <div class="mb-3">
+      <label for="ISBN" class="from-label">ISBN</label>
+      <input
+              type="text"
+              class="from-control"
+              name="Book name"
+              id="ISBN"
+      >
+    </div>
+    <div class="mb-3">
+      <label for="type" class="from-label">Type</label>
+      <input
+              type="text"
+              class="from-control"
+              name="Book name"
+              id="type"
+      >
+    </div>
+    <div class="mb-3">
+      <label for="author" class="from-label">author</label>
+      <input
+              type="text"
+              class="from-control"
+              name="Book name"
+              id="author"
+      >
+    </div>
+    <button type="submit" class="btn btn-primary bookName">Submit</button>
+  </form>
 </div>
 
 </body>
 <script>
-    var bookNameElm = document.getElementById("bookName")
-    var priceNumberElm = document.getElementById("priceNumber")
-    var ISBNElm = document.getElementById("ISBN")
-    var TypeElm = document.getElementById("type")
-    var id = window.location.search.replace("?id=","")
-    document.addEventListener("DOMContentLoaded", function(){
-        fetch(`http://localhost:5000/api/v1/books/${id}`, {
-            method: "GET"
-        }).then(response => response.json()).then(response => {
-            console.log(response)
-            bookNameElm.value = response.result.bookName
-            priceNumberElm.value = response.result.priceNumber
-            ISBNElm.value = response.result.ISBN
-            TypeElm.value = response.result.type
+  var bookNameElm = document.getElementById("bookName")
+  var priceNumberElm = document.getElementById("priceNumber")
+  var ISBNElm = document.getElementById("ISBN")
+  var typeElm = document.getElementById("type")
+  var authorElm = document.getElementById("author")
+  var id = window.location.search.replace("?id=","")
+  document.addEventListener("DOMContentLoaded", function(){
+    fetch(`http://localhost:5000/api/v1/books/${id}`, {
+      method: "GET"
+    }).then(response => response.json()).then(response => {
+      console.log(response)
+      bookNameElm.value = response.result.bookName
+      priceNumberElm.value = response.result.priceNumber
+      ISBNElm.value = response.result.ISBN
+      typeElm.value = response.result.type
+      authorElm.value = response.result.author
 
 
-        })
-    });
+    })
+  });
 
 
-    function handleFormSubmit(e){
-        e.preventDefault()
-        var bookNameInput = document.getElementById ("bookName")
-        var priceNumberInput = document.getElementById ("priceNumber")
-        var ISBNInput = document.getElementById ("ISBN")
-        var TypeInput = document.getElementById ("type")
-        console.log(bookNameInput.value)
-        console.log(priceNumberInput.value)
-        console.log(ISBNInput.value)
-        console.log(TypeInput.value)
+  function handleFormSubmit(e){
+    e.preventDefault()
 
 
-        var formData = {
-            bookName : bookNameElm.value,
-            priceNumber: priceNumberElm.value,
-            ISBN: ISBNElm.value,
-            Type: TypeElm.value,
+    var formData = {
+      bookName : bookNameElm.value,
+      priceNumber: priceNumberElm.value,
+      ISBN: ISBNElm.value,
+      type: typeElm.value,
+      author: authorElm.value,
 
-        }
-
-
-
-        fetch(`http://localhost:5000/api/v1/boos/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(formData)
-        }).then(response => response.json()).then(response =>{
-            console.log(response)
-            alert ("submit completed")
-
-        })
     }
+
+
+
+    fetch(`http://localhost:5000/api/v1/books/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    }).then(response => response.json()).then(response =>{
+      console.log(response)
+      alert ("submit completed")
+
+    })
+  }
 
 
 
 </script>
 
 </body>
-</html>
