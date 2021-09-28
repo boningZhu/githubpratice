@@ -16,7 +16,8 @@ c.execute(
         bookName text,
         priceNumber text,
         ISBN text,
-        type text
+        type text,
+        author text
         )
     """
 )
@@ -55,7 +56,8 @@ def get_book_list():
             "bookName": result[1],
             "priceNumber": result[2],
             "ISBN": result[3],
-            "type": result[4]
+            "type": result[4],
+            "author": result[5]
         })
     return to_response(book_list, "book list loaded", 200)
 
@@ -72,7 +74,8 @@ def get_book_by_id(id):
             "bookName": result[1],
             "priceNumber": result[2],
             "ISBN": result[3],
-            "type": result[4]
+            "type": result[4],
+            "author": result[5]
         }
         return to_response(founded_book, "book loaded", 200)
     except sqlite3.Error as err:
@@ -82,13 +85,14 @@ def get_book_by_id(id):
 @app.route('/api/v1/books', methods=['POST'])
 def create_book():
     try:
-        query = "insert into books ('bookName', 'priceNumber','ISBN','type') values (:bookName, :priceNumber, :ISBN, :type)"
+        query = "insert into books ('bookName', 'priceNumber','ISBN','type','author') values (:bookName, :priceNumber, :ISBN, :type,:author)"
         c1 = conn.cursor()
         c1.execute(query, {
             "bookName": request.json["bookName"],
             "priceNumber": request.json["priceNumber"],
             "ISBN": request.json["ISBN"],
-            "type": request.json["type"]}
+            "type": request.json["type"],
+            "author": request.json["author"]}
                    )
         conn.commit()
 
@@ -102,7 +106,11 @@ def update_book_by_id(id):
     query = "update books set 'bookName' = :bookName, " \
             "'priceNumber' = :priceNumber, " \
             "'ISBN' = :ISBN, " \
-            "'type' = :type where id= :id"
+            "'type' = :type where id= :id " \
+            "'author' = :author, "
+
+
+
 
     c1 = conn.cursor()
     c1.execute(query, {
@@ -110,6 +118,7 @@ def update_book_by_id(id):
         "priceNumber": request.json["priceNumber"],
         "ISBN": request.json["ISBN"],
         "type": request.json["type"],
+        "author": request.json["author"],
         "id": id
     })
     conn.commit()
