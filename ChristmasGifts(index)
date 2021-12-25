@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChristmasGifts List</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+        crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <table class="table">
+        <thead>
+        <tr>
+            <td>name</td>
+            <td>price</td>
+            <td>number</td>
+            <td>delete</td>
+        </tr>
+        </thead>
+        <tbody id="ChristmasGifts List">
+        </tbody>
+
+    </table>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('http://localhost:5000/api/v1/ChristmasGifts', {
+            method: "GET"
+        }).then(response => response.json()).then(response => {
+            console.log(response)
+            var listElm = document.getElementById("ChristmasGifts List")
+            var tbodyStr = ""
+            for (var i = 0; i < response.result.length; i++) {
+                var item = response.result[i]
+                tbodyStr = tbodyStr + `<tr>
+          <td><a href="./Update.html?id=${item.id}">${item.id}</a></td>
+          <td>${item.name} </td>
+          <td>${item.price}</td>
+          <td>${item.number}</td>
+          <td><button class="btn btn-danger" onclick="handleDelete(${item.id})">Delete</button></td>
+        </tr>`
+            }
+            console.log(tbodyStr)
+            listElm.innerHTML = tbodyStr
+        })
+    });
+
+    function handleDelete(id) {
+        if (confirm("are you sure?")) {
+            fetch(`http://localhost:5000/api/v1/ChristmasGifts/${id}`,{
+                method: 'DELETE'
+            }).then(response => response.json()).then(response => {
+                if (response.result) {
+                    alert("deleted")
+                    //window.location.reload()
+                }
+            })
+        }
+    }
+
+</script>
+
+
+</body>
+</html>
