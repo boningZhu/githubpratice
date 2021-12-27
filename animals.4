@@ -1,0 +1,128 @@
+import json
+import sqlite3
+
+from flask import Flask, jsonify, request, Response
+from flask_cors import CORS, cross_origin
+
+app = Flask(__name__)
+CORS(app)
+
+conn = sqlite3.connect(r"animals.db", check_same_thread=False)
+c = conn.cursor()
+c.execute(
+    """
+    CREATE TABLE IF NOT EXISTS animals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name text,
+        age text,
+        number text
+        )
+    """
+)
+conn.commit()
+c.close()
+
+
+def to_response(data, message, code):
+    response = {
+        "result": data,
+        "error": None,
+        "message": message
+    }
+    return Response(json.dumps(response), status=code, mimetype="application/json")
+
+
+def to_error_response(error, message, code=500):
+    response = {
+        "result": None,
+        "error": error,
+        "message": message
+    }
+    return Response(json.dumps(response), status=code, mimetype="application/json")
+
+
+@app.route('/api/v1/animals', methods=['GET'])
+def get_animals_List():
+    c1 = conn.cursor()
+    query = "select * from animals"
+    c1.execute(query)
+    results = c1.fetchall()
+    animals_List = []
+    for result in results:
+        animals_List.append({
+            "id": result[0],
+            "name": result[1],
+            "age": result[2],
+            "number": result[3]
+
+        })
+    return to_response(animals_List, "animals List loaded", 200)
+
+
+@app.route('/api/v1/animals/<int:id>', methods=['GET'])
+def get_animals_by_id(id):
+    try:
+        c1 = conn.cursor()
+        query = "select * from animals where id = :id"
+        c1.execute(query, {"id": id})
+        result = c1.fetchone()
+        founded_animals = {
+            "id": result[0],
+            "name": result[1],
+            "age": result[2],
+            "number": result[3]
+        }
+        return to_response(founded_animals, "animals loaded", 200)
+    except sqlite3.Error as err:
+        return to_error_response(' '.join(err.args), "", 500)
+
+
+@app.route('/api/v1/animals', methods=['POST', 'OPTIONS'])
+@cross_origin(origin='*')
+def create_animals_():
+    try:
+        query = "insert into animals ('name', 'age','number') values (:name, :age, :number)"
+        c1 = conn.cursor()
+        c1.execute(query, {
+            "name": request.json["name"],
+            "age": request.json["age"],
+            "number": request.json["number"]}
+                   )
+        conn.commit()
+
+        return get_animals_by_id(c1.lastrowid)
+    except sqlite3.Error as err:
+        return to_error_response(' '.join(err.args), "", 500)
+
+
+@app.route('/api/v1/animals/<int:id>', methods=['PUT'])
+def update_animals_by_id(id):
+    query = "update animals set `name` = :name, " \
+            "`age` = :age, " \
+            "`number` = :number"\
+            " where `id` = :id"
+    print(query)
+    c1 = conn.cursor()
+    c1.execute(query, {
+        "name": request.json["name"],
+        "age": request.json["age"],
+        "number": request.json["number"],
+        "id": id
+    })
+    conn.commit()
+    return get_animals_by_id(id)
+
+
+@app.route('/api/v1/animals/<int:id>', methods=['DELETE'])
+@cross_origin()
+def delete_animals_by_id(id):
+    query = "delete from animals where id= :id"
+    c1 = conn.cursor()
+    c1.execute(query, {
+        "id": id
+    })
+    conn.commit()
+    return to_response(True, "animalsDelete", 200)
+
+if __name__ == '__main__':
+    app.run()
